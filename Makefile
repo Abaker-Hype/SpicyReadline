@@ -1,9 +1,9 @@
-NAME:=libsr.a
+NAME:=libspicyrl.a
 INC:=includes
 SRCDIR:=srcs
 OBJDIR:=objs
 CC:=gcc
-FLAGS:=-Wall -Wextra -I$(INC)
+FLAGS:=-Wall -Werror -Wextra -I$(INC)
 
 SRCS:=$(shell find $(SRCDIR) -type f -name '*.c')
 OBJS:=$(addprefix $(OBJDIR)/,$(notdir $(SRCS:.c=.o)))
@@ -11,7 +11,6 @@ OBJS:=$(addprefix $(OBJDIR)/,$(notdir $(SRCS:.c=.o)))
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@echo $(SRCS)
 	@ar -rcs $(NAME) $(OBJS)
 
 $(OBJDIR)/%.o:**/%.c | $(OBJDIR)
@@ -27,6 +26,9 @@ fclean: clean
 	@rm -rf $(NAME)
 
 re: fclean all
+
+norm:
+	@norminette $(SRCS) $(INC)
 
 testing: $(NAME)
 	@$(CC) test/*.c $(FLAGS) -L. -lsr -o test/test

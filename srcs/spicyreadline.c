@@ -26,6 +26,8 @@ static char	*exit_readline(t_termdata *original, t_buff *buff, bool add_history)
 	fcntl(STDIN_FILENO, F_SETFL, original->flags);
 	if (buff->saved)
 		free(buff->saved);
+	if (add_history)
+		add_history = false;
 	return (NULL);
 }
 
@@ -44,8 +46,7 @@ char	*spicy_readline(char *prompt, bool add_history)
 		{
 			if (input == (long) '\r' && write(STDIN_FILENO, "\r\n", 2))
 				break ;
-			if (!chk_cmds(input))
-				write(STDIN_FILENO, &input, sizeof(long) - 1);
+			write(STDIN_FILENO, &input, sizeof(long) - 1);
 		}
 	}
 	return (exit_readline(&original, &buff, add_history));
