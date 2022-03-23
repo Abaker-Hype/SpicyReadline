@@ -1,14 +1,16 @@
 #include "spicyreadline.h"
 
+void	printbuff(t_buff *buff)
+{
+	printf("Buff = %s\n", buff->saved);
+	printf("Size = %i\n", buff->size);
+	printf("insert = %i\n", buff->insert);
+}
+
 int	main(void)
 {
-	char	*line;
+	t_buff	buff;
+	long	key;
 
-	while (true)
-	{
-		line = spicy_readline("test>", false);
-		if (!line)
-			break ;
-	}
-	return (EXIT_SUCCESS);
+	ft_bzero(&buff, sizeof(t_buff));
 }

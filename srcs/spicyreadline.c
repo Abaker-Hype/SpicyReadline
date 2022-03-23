@@ -6,26 +6,26 @@
 /*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/22 23:20:34 by abaker           ###   ########.fr       */
+/*   Updated: 2022/03/24 09:15:17 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static	void	init_readline(t_termdata *original, t_buff *buff)
+static	void	init_readline(t_spicyrl *spicyrl)
 {
-	enable_raw_mode(&original->term);
-	original->flags = fcntl(STDIN_FILENO, F_GETFL, 0);
-	fcntl(STDIN_FILENO, F_SETFL, original->flags | O_NONBLOCK);
-	bzero(buff, sizeof(*buff));
+	ft_bzero(spicyrl, sizeof(*spicyrl));
+	enable_raw_mode(&spicyrl->original.term);
+	spicyrl->original.flags = fcntl(STDIN_FILENO, F_GETFL, 0);
+	fcntl(STDIN_FILENO, F_SETFL, spicyrl->original.flags | O_NONBLOCK);
 }
 
-static char	*exit_readline(t_termdata *original, t_buff *buff, bool add_history)
+static char	*exit_readline(t_spicyrl *spicyrl, bool add_history)
 {
-	disable_raw_mode(&original->term);
-	fcntl(STDIN_FILENO, F_SETFL, original->flags);
-	if (buff->saved)
-		free(buff->saved);
+	disable_raw_mode(&spicyrl->original.term);
+	fcntl(STDIN_FILENO, F_SETFL, spicyrl->original.flags);
+	if (spicyrl->buffer.saved)
+		free(spicyrl->buffer.saved);
 	if (add_history)
 		add_history = false;
 	return (NULL);
@@ -33,12 +33,11 @@ static char	*exit_readline(t_termdata *original, t_buff *buff, bool add_history)
 
 char	*spicy_readline(char *prompt, bool add_history)
 {
-	t_termdata	original;
-	t_buff		buff;
+	t_spicyrl	spicyrl;
 	long		input;
 
-	init_readline(&original, &buff);
-	write(STDOUT_FILENO, prompt, strlen(prompt));
+	init_readline(&spicyrl);
+	write(STDOUT_FILENO, prompt, ft_strlen(prompt));
 	while (true)
 	{
 		input = 0;
@@ -46,8 +45,7 @@ char	*spicy_readline(char *prompt, bool add_history)
 		{
 			if (input == (long) '\r' && write(STDIN_FILENO, "\r\n", 2))
 				break ;
-			write(STDIN_FILENO, &input, sizeof(long) - 1);
 		}
 	}
-	return (exit_readline(&original, &buff, add_history));
+	return (exit_readline(&spicyrl, add_history));
 }
