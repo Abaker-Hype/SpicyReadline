@@ -9,7 +9,7 @@ LIBDIR:=./liball
 CC:=gcc
 FLAGS:=-Wall -Werror -Wextra -I$(INC)
 LIB:=$(LIBDIR)/liball.a
-LIBFLAGS:=-I$(LIBDIR)/includes -L$(LIBDIR) -lall
+LIBFLAGS:=-I$(LIBDIR)/includes
 
 #SRCS/OBJS
 SRCS:=$(shell find $(SRCDIR) -type f -name '*.c')
