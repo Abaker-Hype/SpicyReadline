@@ -6,7 +6,7 @@
 /*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/23 23:27:55 by abaker           ###   ########.fr       */
+/*   Updated: 2022/03/24 19:46:58 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <termios.h>
 # include <stdio.h>
 # include <fcntl.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 typedef enum keys{
 	K_DEL = 2117294875,
@@ -53,6 +55,7 @@ typedef struct s_spicyrl{
 }	t_spicyrl;
 
 char	*spicy_readline(char *prompt, bool add_history);
+char	*tmp_readline(char *prompt, bool add_history);
 
 void	enable_raw_mode(struct termios *original);
 void	disable_raw_mode(struct termios *original);

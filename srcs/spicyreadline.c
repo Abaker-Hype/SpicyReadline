@@ -6,7 +6,7 @@
 /*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/24 09:15:17 by abaker           ###   ########.fr       */
+/*   Updated: 2022/03/24 20:03:57 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,14 @@ char	*spicy_readline(char *prompt, bool add_history)
 		}
 	}
 	return (exit_readline(&spicyrl, add_history));
+}
+
+char	*tmp_readline(char *prompt, bool add)
+{
+	char	*line;
+
+	line = readline(prompt);
+	if (line && add)
+		add_history(line);
+	return (line);
 }
