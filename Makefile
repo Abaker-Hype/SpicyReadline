@@ -18,7 +18,9 @@ OBJS:=$(addprefix $(OBJDIR)/,$(notdir $(SRCS:.c=.o)))
 all: $(NAME)
 
 $(NAME): $(LIB) $(OBJS)
+	@printf "Compiling $@..."
 	@ar -rcs $(NAME) $(OBJS)
+	@printf "\e[92mDone\e[0m\n"
 
 $(OBJDIR)/%.o:**/%.c | $(OBJDIR)
 	@$(CC) $< $(FLAGS) $(LIBFLAGS) -c -o $@
@@ -27,7 +29,9 @@ $(OBJDIR):
 	@mkdir -p $(OBJDIR)
 
 $(LIB):
-	@make -s -C $(LIBDIR)
+	@printf "Compiling $(notdir $@)..."
+	@make -s -C $(dir $@)
+	@printf "\e[92mDone\e[0m\n"
 
 clean:
 	@rm -rf $(OBJDIR)
