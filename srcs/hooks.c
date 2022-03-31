@@ -6,13 +6,13 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 10:55:13 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/31 12:04:46 by abaker           ###   ########.fr       */
+/*   Updated: 2022/03/31 12:06:06 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static void	srl_add_hook(t_hooks **hooks, t_keys key, void (*f)(int))
+static void	srl_add_hook(t_hooks **hooks, t_keys key, void (*f)(int, *t_spicyrl))
 {
 	t_hooks	*new;
 	t_hooks	*curr;
