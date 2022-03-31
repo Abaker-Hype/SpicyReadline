@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spicyreadline.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
+/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/24 19:46:58 by abaker           ###   ########.fr       */
+/*   Updated: 2022/03/30 13:57:49 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ typedef enum keys{
 }	t_keys;
 
 typedef struct s_termdata{
-	struct termios	term;
+	struct termios	original;
 	int				flags;
 }	t_termdata;
 
@@ -45,23 +45,37 @@ typedef struct s_buff{
 	char	*saved;
 	int		size;
 	int		chars;
-	int		insert;
 }	t_buff;
 
-typedef struct s_spicyrl{
-	t_buff		buffer;
-	t_termdata	original;
+typedef struct s_history{
+	struct s_history	*prev;
+	struct s_history	*next;
+	t_buff				buff;
+}	t_history;
 
-}	t_spicyrl;
+typedef struct s_spicyrl	t_spicyrl;
+
+typedef struct s_hooks{
+	t_keys			key;
+	void			(*f)(int key, struct s_spicyrl *rl);
+	struct s_hooks	*next;
+}	t_hooks;
+
+struct s_spicyrl{
+	t_termdata	original;
+	t_history	*hist;
+	t_hooks		*hooks;
+	int			cursor;
+};
 
 char	*spicy_readline(char *prompt, bool add_history);
 char	*tmp_readline(char *prompt, bool add_history);
 
-void	enable_raw_mode(struct termios *original);
-void	disable_raw_mode(struct termios *original);
+void	srl_enable_raw(struct termios *original);
+void	srl_disable_raw(struct termios *original);
 
-void	move_cursor(t_buff *buff, t_keys key);
-void	add_buffer(t_buff *buff, char *str);
-void	del_buffer(t_buff *buff);
+void	srl_init_hooks(t_hooks **hooks);
+void	srl_del_hooks(t_hooks **hooks);
+bool	srl_check_hooks(t_spicyrl *rl, int key);
 
 #endif
