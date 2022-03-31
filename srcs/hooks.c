@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 10:55:13 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/30 11:18:20 by abaker           ###   ########.fr       */
+/*   Updated: 2022/03/31 12:04:46 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ bool	srl_check_hooks(t_spicyrl *rl, int key)
 		if (curr->key == key)
 		{
 			if (curr->f)
-				(*curr->f)(key);
+				(*curr->f)(key, rl);
 			return (true);
 		}
 		curr = curr->next;
