@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 19:24:01 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/30 15:20:43 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/01 13:49:58 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,23 +26,7 @@ static int	srl_char_pos(char *str, int pos)
 	return (i);
 }
 
-static int	srl_update_chars(t_buff *buff, char *str, int pos)
-{
-	int	i;
-
-	i = 0;
-	while (str[i])
-	{
-		if (ft_charsize(str[i++]) > 0)
-		{
-			buff->chars++;
-			pos++;
-		}
-	}
-	return (pos);
-}
-
-int	srl_add_buffer(t_buff *buff, char *str, int pos)
+bool	srl_add_buffer(t_buff *buff, char *str, int *cursor)
 {
 	char	*tmp;
 	int		size;
@@ -50,36 +34,37 @@ int	srl_add_buffer(t_buff *buff, char *str, int pos)
 	size = buff->size + ft_strlen(str) + 1;
 	tmp = ft_calloc(size, sizeof(char));
 	if (!tmp)
-		return (pos);
-	ft_strlcat(tmp, buff->saved, srl_char_pos(buff->saved, pos) + 1);
+		return (false);
+	ft_strlcat(tmp, buff->saved, srl_char_pos(buff->saved, *cursor) + 1);
 	ft_strlcat(tmp, str, size);
-	ft_strlcat(tmp, &buff->saved[srl_char_pos(buff->saved, pos)], size);
+	ft_strlcat(tmp, &buff->saved[srl_char_pos(buff->saved, *cursor)], size);
 	if (buff->saved)
 		free(buff->saved);
 	buff->saved = tmp;
 	buff->size = size - 1;
-	return (srl_update_chars(buff, str, pos));
+	size = ft_charcount(str);
+	buff->chars += size;
+	*cursor += size;
+	return (true);
 }
 
-int	srl_del_buffer(t_buff *buff, int pos)
+bool	srl_rmv_buffer(t_buff *buff, int *cursor)
 {
 	char	*tmp;
 	int		size;
 
-	if (pos == 0 || pos > buff->chars)
-		return ;
 	size = buff->size
-		- ft_charsize(buff->saved[srl_char_pos(buff->saved, pos)]);
+		- ft_charsize(buff->saved[srl_char_pos(buff->saved, *cursor)]);
 	tmp = ft_calloc(size + 1, sizeof(char));
 	if (!tmp)
-		return (pos);
-	ft_strlcat(tmp, buff->saved, srl_char_pos(buff->saved, pos - 1) + 1);
-	ft_strlcat(tmp, &buff->saved[srl_char_pos(buff->saved, pos)], size + 1);
+		return (false);
+	ft_strlcat(tmp, buff->saved, srl_char_pos(buff->saved, *cursor - 1) + 1);
+	ft_strlcat(tmp, &buff->saved[srl_char_pos(buff->saved, *cursor)], size + 1);
 	if (buff->saved)
 		free(buff->saved);
 	buff->saved = tmp;
 	buff->size = size;
 	buff->chars--;
-	pos--;
-	return (pos);
+	(*cursor)--;
+	return (true);
 }

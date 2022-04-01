@@ -6,23 +6,34 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/30 13:38:33 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/01 12:55:41 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static	void	srl_init(t_spicyrl *spicyrl)
+//WHY DO I NEED THAT WRITE THERE TO NOT BREAK SHIT!?!?!?
+static	void	srl_init(t_spicyrl *srl, char *prompt)
 {
-	ft_bzero(spicyrl, sizeof(*spicyrl));
-	srl_enable_raw(&spicyrl->original.term);
-	srl_enable_noblock(&spicyrl->original);
+	write(STDOUT_FILENO, "", 0);
+	ft_bzero(srl, sizeof(t_spicyrl));
+	srl->prompt = prompt;
+	srl->redisplay = true;
+	srl_enable_raw(&srl->original);
+	srl_init_hooks();
 }
 
-static char	*srl_exit(t_spicyrl *spicyrl, bool add_history)
+static char	*srl_exit(t_spicyrl *srl, bool add_history)
 {
-	srl_disable_raw(&spicyrl->original.term);
-	return (NULL);
+	char	*rtn;
+
+	add_history = false;
+	srl_disable_raw(&srl->original);
+	srl_del_hooks();
+	rtn = NULL;
+	if (srl->buff.size > 0)
+		rtn = ft_strdup(srl->buff.saved);
+	return (rtn);
 }
 
 char	*spicy_readline(char *prompt, bool add_history)
@@ -30,19 +41,20 @@ char	*spicy_readline(char *prompt, bool add_history)
 	t_spicyrl	srl;
 	long		input;
 
-	srl_init(&spicyrl);
-	write(STDOUT_FILENO, prompt, ft_strlen(prompt));
-	while (true)
+	srl_init(&srl, prompt);
+	while (!srl.exit)
 	{
 		input = 0;
-		if (read(STDIN_FILENO, &input, sizeof(long) - 1) != -1)
+		srl_redisplay(&srl);
+		while (read(STDIN_FILENO, &input, sizeof(long) - 1) > 0)
 		{
-			if (input == (long) '\r' && write(STDOUT_FILENO, "\r\n", 2))
-				break ;
 			if (!srl_check_hooks(&srl, input))
-				write(STDOUT_FILENO, &input, ft_strlen((char *)&input));
+				srl.redisplay = srl_add_buffer(&srl.buff,
+						(char *)&input, &srl.cursor);
+			input = 0;
 		}
 	}
+	write(STDOUT_FILENO, "\r\n", 2);
 	return (srl_exit(&srl, add_history));
 }
 

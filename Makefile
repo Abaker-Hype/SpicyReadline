@@ -48,6 +48,6 @@ norm:
 	@make norm -s -C $(LIBDIR)
 
 testing: $(NAME)
-	@$(CC) test/*.c -L. -lspicyrl $(FLAGS) $(LIBFLAGS) -o test/test
+	@$(CC) test/*.c -lreadline -L. -lspicyrl -Lliball -lall $(FLAGS) $(LIBFLAGS) -o test/test
 	@test/test
 	@rm test/test

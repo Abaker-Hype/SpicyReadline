@@ -6,13 +6,20 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 10:55:13 by abaker            #+#    #+#             */
-/*   Updated: 2022/03/31 12:06:06 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/01 10:43:32 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static void	srl_add_hook(t_hooks **hooks, t_keys key, void (*f)(int, *t_spicyrl))
+static t_hooks	**g_hooks(void)
+{
+	static t_hooks	*hooks = NULL;
+
+	return (&hooks);
+}
+
+static void	srl_add_hook(t_keys key, void (*f)(t_keys, t_spicyrl *))
 {
 	t_hooks	*new;
 	t_hooks	*curr;
@@ -22,9 +29,9 @@ static void	srl_add_hook(t_hooks **hooks, t_keys key, void (*f)(int, *t_spicyrl)
 		return ;
 	new->key = key;
 	new->f = f;
-	curr = *hooks;
+	curr = *g_hooks();
 	if (!curr)
-		*hooks = new;
+		*g_hooks() = new;
 	else
 	{
 		while (curr->next)
@@ -33,45 +40,47 @@ static void	srl_add_hook(t_hooks **hooks, t_keys key, void (*f)(int, *t_spicyrl)
 	}
 }
 
-void	srl_init_hooks(t_hooks **hooks)
+void	srl_init_hooks(void)
 {
-	srl_add_hook(hooks, K_CTRLBS, NULL);
-	srl_add_hook(hooks, K_CTRLC, NULL);
-	srl_add_hook(hooks, K_CTRLD, NULL);
-	srl_add_hook(hooks, K_DEL, NULL);
-	srl_add_hook(hooks, K_TAB, NULL);
-	srl_add_hook(hooks, K_UP, NULL);
-	srl_add_hook(hooks, K_DOWN, NULL);
-	srl_add_hook(hooks, K_LEFT, NULL);
-	srl_add_hook(hooks, K_RIGHT, NULL);
+	if (*g_hooks())
+		return ;
+	srl_add_hook(K_ENTER, srl_hook_return);
+	srl_add_hook(K_CTRLBS, NULL);
+	srl_add_hook(K_CTRLC, NULL);
+	srl_add_hook(K_CTRLD, NULL);
+	srl_add_hook(K_DEL, srl_hook_del);
+	srl_add_hook(K_DELF, srl_hook_del);
+	srl_add_hook(K_ESC, NULL);
+	srl_add_hook(K_TAB, NULL);
+	srl_add_hook(K_UP, NULL);
+	srl_add_hook(K_DOWN, NULL);
+	srl_add_hook(K_LEFT, srl_hook_cursor);
+	srl_add_hook(K_RIGHT, srl_hook_cursor);
 }
 
-void	srl_del_hooks(t_hooks **hooks)
+void	srl_del_hooks(void)
 {
-	t_hooks	*curr;
 	t_hooks	*next;
 
-	curr = *hooks;
-	while (curr)
+	while (*g_hooks())
 	{
-		next = curr->next;
-		free(curr);
-		curr = next;
+		next = (*g_hooks())->next;
+		free(*g_hooks());
+		*g_hooks() = next;
 	}
-	*hooks = NULL;
 }
 
-bool	srl_check_hooks(t_spicyrl *rl, int key)
+bool	srl_check_hooks(t_spicyrl *srl, long key)
 {
 	t_hooks	*curr;
 
-	curr = rl->hooks;
+	curr = *g_hooks();
 	while (curr)
 	{
-		if (curr->key == key)
+		if ((long)curr->key == key)
 		{
 			if (curr->f)
-				(*curr->f)(key, rl);
+				(*curr->f)(curr->key, srl);
 			return (true);
 		}
 		curr = curr->next;
