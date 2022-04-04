@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hooks.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 10:55:13 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/01 10:43:32 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/04 17:10:25 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ void	srl_init_hooks(void)
 	srl_add_hook(K_DELF, srl_hook_del);
 	srl_add_hook(K_ESC, NULL);
 	srl_add_hook(K_TAB, NULL);
-	srl_add_hook(K_UP, NULL);
-	srl_add_hook(K_DOWN, NULL);
+	srl_add_hook(K_UP, srl_hook_history);
+	srl_add_hook(K_DOWN, srl_hook_history);
 	srl_add_hook(K_LEFT, srl_hook_cursor);
 	srl_add_hook(K_RIGHT, srl_hook_cursor);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   display.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 16:55:42 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/01 11:36:00 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/04 17:05:05 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,9 @@ void	srl_redisplay(t_spicyrl *srl)
 		return ;
 	write(STDOUT_FILENO, "\e[25l\r\e[0J", 11);
 	write(STDOUT_FILENO, srl->prompt, ft_strlen(srl->prompt));
-	if (srl->buff.size > 0)
-		write(STDOUT_FILENO, srl->buff.saved, srl->buff.size);
-	i = srl->buff.chars - srl->cursor;
+	if (srl->buff->size > 0)
+		write(STDOUT_FILENO, srl->buff->saved, srl->buff->size);
+	i = srl->buff->chars - srl->cursor;
 	while (i-- > 0)
 		write(STDOUT_FILENO, "\e[1D", 5);
 	write(STDOUT_FILENO, "\e[25h", 6);

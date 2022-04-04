@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spicyreadline.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/01 10:50:05 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/04 17:09:56 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,12 @@ typedef struct s_termdata{
 }	t_termdata;
 
 typedef struct s_buff{
-	char	*saved;
-	int		size;
-	int		chars;
+	char			*saved;
+	int				size;
+	int				chars;
+	struct s_buff	*prev;
+	struct s_buff	*next;
 }	t_buff;
-
-typedef struct s_history{
-	t_buff				*buff;
-	struct s_history	*prev;
-	struct s_history	*next;
-}	t_history;
 
 typedef struct s_spicyrl	t_spicyrl;
 
@@ -65,7 +61,7 @@ typedef struct s_hooks{
 
 struct s_spicyrl{
 	t_termdata	original;
-	t_buff		buff;
+	t_buff		*buff;
 	char		*prompt;
 	int			cursor;
 	bool		redisplay;
@@ -74,6 +70,7 @@ struct s_spicyrl{
 
 char	*spicy_readline(char *prompt, bool add_history);
 char	*tmp_readline(char *prompt, bool add_history);
+void	srl_clean_up(void);
 
 void	srl_enable_raw(t_termdata	*term);
 void	srl_disable_raw(t_termdata	*term);
@@ -82,9 +79,13 @@ void	srl_init_hooks(void);
 void	srl_del_hooks(void);
 bool	srl_check_hooks(t_spicyrl *rl, long key);
 
+t_buff	*srl_new_history(void);
+void	srl_del_history(void);
+
 void	srl_hook_return(t_keys key, t_spicyrl *srl);
 void	srl_hook_del(t_keys key, t_spicyrl *srl);
 void	srl_hook_cursor(t_keys key, t_spicyrl *srl);
+void	srl_hook_history(t_keys key, t_spicyrl *srl);
 
 bool	srl_add_buffer(t_buff *buff, char *str, int *cursor);
 bool	srl_rmv_buffer(t_buff *buff, int *cursor);

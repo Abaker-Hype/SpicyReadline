@@ -3,6 +3,18 @@
 
 int	main(void)
 {
-	char *line = spicy_readline("FUCK>", false);
-	printf("Returned line = %s\n", line);
+	char *line;
+
+	while (true)
+	{
+		line = spicy_readline("FUCK>", false);
+		printf("Returned Line = %s\n", line);
+		if (line)
+		{
+			if (!ft_strncmp("exit", line, 5))
+				break ;
+			free(line);
+		}
+	}
+	free(line);
 }
