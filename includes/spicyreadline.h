@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spicyreadline.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
+/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/04 17:09:56 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/05 13:02:20 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,12 @@ struct s_spicyrl{
 	t_buff		*buff;
 	char		*prompt;
 	int			cursor;
+	bool		hist;
 	bool		redisplay;
 	bool		exit;
 };
 
-char	*spicy_readline(char *prompt, bool add_history);
-char	*tmp_readline(char *prompt, bool add_history);
+char	*spicy_readline(char *prompt, bool hist);
 void	srl_clean_up(void);
 
 void	srl_enable_raw(t_termdata	*term);
@@ -80,7 +80,8 @@ void	srl_del_hooks(void);
 bool	srl_check_hooks(t_spicyrl *rl, long key);
 
 t_buff	*srl_new_history(void);
-void	srl_del_history(void);
+void	srl_del_history(t_buff *del);
+void	srl_update_history(t_buff *buff, bool hist);
 
 void	srl_hook_return(t_keys key, t_spicyrl *srl);
 void	srl_hook_del(t_keys key, t_spicyrl *srl);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   hookfuncs.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
+/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 18:35:25 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/04 17:14:46 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/05 11:56:10 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ void	srl_hook_cursor(t_keys key, t_spicyrl *srl)
 
 void	srl_hook_history(t_keys key, t_spicyrl *srl)
 {
+	if (!srl->hist)
+		return ;
 	if (key == K_UP)
 	{
 		if (!srl->buff->prev)
