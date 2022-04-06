@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/05 13:35:28 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/06 16:02:06 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,19 @@
 
 static	void	srl_init(t_spicyrl *srl, char *prompt, bool hist)
 {
-	write(STDOUT_FILENO, "\e[s", 5);
 	ft_bzero(srl, sizeof(t_spicyrl));
 	srl->buff = srl_new_history();
 	srl->prompt = prompt;
 	srl->hist = hist;
 	srl->redisplay = true;
+	srl->cursor_init = srl_get_cursor_pos();
+	if (srl->cursor_init.col > 1)
+	{
+		write(STDOUT_FILENO, "\e[7;1m%\e[0m\n", 13);
+		srl->cursor_init.col = 1;
+		srl->cursor_init.row++;
+	}
+	write(STDOUT_FILENO, "\e[s", 4);
 	srl_redisplay(srl);
 	srl_enable_raw(&srl->original);
 	srl_init_hooks();

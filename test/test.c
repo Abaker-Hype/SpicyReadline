@@ -8,7 +8,8 @@ int	main(void)
 	while (true)
 	{
 		line = spicy_readline("FUCK>", true);
-		printf("Returned Line = %s\n", line);
+		printf("Returned Line = %s", line);
+		fflush(NULL);
 		if (line)
 		{
 			if (!ft_strncmp("exit", line, 5))
