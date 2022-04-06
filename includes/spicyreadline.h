@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spicyreadline.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/06 15:59:09 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/06 22:58:06 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <termios.h>
-# include <stdio.h>
 # include <fcntl.h>
-# include <readline/readline.h>
-# include <readline/history.h>
+# include <sys/ioctl.h>
 
 typedef enum keys{
 	K_DELF = 2117294875,
@@ -46,6 +44,8 @@ typedef struct s_cursor{
 typedef struct s_termdata{
 	struct termios	original;
 	int				flags;
+	struct winsize	win;
+	bool			changed;
 }	t_termdata;
 
 typedef struct s_buff{
@@ -65,17 +65,22 @@ typedef struct s_hooks{
 }	t_hooks;
 
 struct s_spicyrl{
-	t_termdata	original;
+	t_termdata	term;
 	t_buff		*buff;
 	t_cursor	cursor_init;
 	char		*prompt;
+	char		*pwd;
+	char		*user;
 	int			cursor;
 	bool		hist;
 	bool		redisplay;
 	bool		exit;
 };
 
-char		*spicy_readline(char *prompt, bool hist);
+typedef struct s_srl_settings{
+}	t_srl_settings;
+
+char		*spicy_readline(char *prompt, char *user, char *pwd, bool hist);
 void		srl_clean_up(void);
 
 void		srl_enable_raw(t_termdata	*term);
@@ -83,6 +88,7 @@ void		srl_disable_raw(t_termdata	*term);
 
 t_cursor	srl_get_cursor_pos(void);
 void		srl_set_cursor_pos(t_cursor pos);
+void		srl_get_term_width(t_termdata *term);
 
 void		srl_init_hooks(void);
 void		srl_del_hooks(void);
@@ -101,5 +107,6 @@ bool		srl_add_buffer(t_buff *buff, char *str, int *cursor);
 bool		srl_rmv_buffer(t_buff *buff, int *cursor);
 
 void		srl_redisplay(t_spicyrl *srl);
+char		*srl_banner(t_spicyrl *srl);
 
 #endif

@@ -3,36 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   terminal.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
+/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:19:21 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/06 16:03:00 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/06 21:50:49 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
-
-void	srl_enable_raw(t_termdata	*term)
-{
-	struct termios	raw;
-
-	tcgetattr(STDIN_FILENO, &term->original);
-	raw.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
-			| INLCR | IGNCR | ICRNL | IXON);
-	raw.c_oflag &= ~OPOST;
-	raw.c_cflag &= ~(CSIZE | PARENB);
-	raw.c_cflag |= CS8;
-	raw.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-	tcsetattr(STDIN_FILENO, TCSANOW, &raw);
-	term->flags = fcntl(STDIN_FILENO, F_GETFL, 0);
-	fcntl(STDIN_FILENO, F_SETFL, term->flags | O_NONBLOCK);
-}
-
-void	srl_disable_raw(t_termdata	*term)
-{
-	tcsetattr(STDIN_FILENO, TCSANOW, &term->original);
-	fcntl(STDIN_FILENO, F_SETFL, term->flags);
-}
 
 static struct termios	srl_raw_output(void)
 {
@@ -71,11 +49,24 @@ t_cursor	srl_get_cursor_pos(void)
 				pos.row = pos.row * 10 + c - '0';
 		}
 	}
-	tcsetattr(0, TCSANOW, &saved);
+	tcsetattr(STDOUT_FILENO, TCSANOW, &saved);
 	return (pos);
 }
 
 void	srl_set_cursor_pos(t_cursor pos)
 {
-	pos.row = 69;
+	if (pos.row != 69)
+		pos.row = 69;
+}
+
+void	srl_get_term_width(t_termdata *term)
+{
+	struct winsize new;
+
+	ioctl(STDIN_FILENO, TIOCGWINSZ, &new);
+	if (new.ws_col != term->win.ws_col)
+	{
+		term->win = new;
+		term->changed = true;
+	}
 }

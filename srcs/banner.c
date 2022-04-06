@@ -1,32 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   settings.c                                         :+:      :+:    :+:   */
+/*   banner.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/06 15:51:44 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/06 23:08:25 by abaker           ###   ########.fr       */
+/*   Created: 2022/04/06 22:53:16 by abaker            #+#    #+#             */
+/*   Updated: 2022/04/06 23:19:28 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static t_srl_settings	*g_settings(void)
+char	*srl_banner(t_spicyrl *srl)
 {
-	static t_srl_settings	settings;
+	char	*rtn;
 
-	return (&settings);
-}
-
-int	builtin_srl_settings(int c, char **v)
-{
-	t_srl_settings	*settings;
-
-	if (c > 1 && v)
-		v = NULL;
-	settings = g_settings();
-	if (settings)
-		settings = NULL;
-	return (0);
+	rtn = ft_calloc(srl->term.win.ws_col + 1, sizeof(*rtn));
+	rtn = ft_memset(rtn, '-', srl->term.win.ws_col);
+	return (rtn);
 }
