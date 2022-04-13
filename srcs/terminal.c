@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   terminal.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
+/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:19:21 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/06 21:50:49 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/08 15:10:46 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	srl_set_cursor_pos(t_cursor pos)
 
 void	srl_get_term_width(t_termdata *term)
 {
-	struct winsize new;
+	struct winsize	new;
 
 	ioctl(STDIN_FILENO, TIOCGWINSZ, &new);
 	if (new.ws_col != term->win.ws_col)

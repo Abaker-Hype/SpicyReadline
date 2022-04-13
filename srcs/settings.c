@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   settings.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
+/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 15:51:44 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/06 23:08:25 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/08 15:29:23 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,12 @@ static t_srl_settings	*g_settings(void)
 	return (&settings);
 }
 
-int	builtin_srl_settings(int c, char **v)
+int	srl_settings(int c, char **v)
 {
 	t_srl_settings	*settings;
 
+	printf("Readline: Settings not yet coded\n");
+	return (1);
 	if (c > 1 && v)
 		v = NULL;
 	settings = g_settings();

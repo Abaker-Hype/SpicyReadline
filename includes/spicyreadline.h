@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   spicyreadline.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
+/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/06 22:58:06 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/08 15:29:39 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct s_srl_settings{
 
 char		*spicy_readline(char *prompt, char *user, char *pwd, bool hist);
 void		srl_clean_up(void);
+int			srl_settings(int c, char **v);
 
 void		srl_enable_raw(t_termdata	*term);
 void		srl_disable_raw(t_termdata	*term);
