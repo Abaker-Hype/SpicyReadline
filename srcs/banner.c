@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 22:53:16 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/08 15:45:15 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/13 11:26:35 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,13 @@ char	*srl_banner(t_spicyrl *srl)
 
 	rtn = ft_strdup("\e[1;38;2;0;255;255m╞");
 	rtn = srl_add_fill(rtn, 5);
-	i = 7;
+	i = 8;
 	if (srl->user)
 		rtn = srl_add_info(rtn, srl->user, &i);
 	if (srl->pwd)
 		rtn = srl_add_info(rtn, srl->pwd, &i);
 	if (i < srl->term.win.ws_col)
 		rtn = srl_add_fill(rtn, srl->term.win.ws_col - i);
-	rtn = ft_strjoinfree(rtn, "╡╘╡\e[0m", true, false);
+	rtn = ft_strjoinfree(rtn, "╡\r\n╘╡\e[0m", true, false);
 	return (rtn);
 }
