@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 18:35:25 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/05 11:56:10 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/14 13:13:15 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,17 @@
 
 void	srl_hook_return(t_keys key, t_spicyrl *srl)
 {
-	if (key == K_ENTER)
-		srl->exit = true;
+	if (key == K_CTRLC || key == K_CTRLD)
+	{
+		if (srl->buff->saved)
+			free(srl->buff->saved);
+		srl->buff->saved = NULL;
+		if (key == K_CTRLD)
+			srl->buff->saved = ft_strdup("exit");
+		else
+			write(STDOUT_FILENO, "^C", 2);
+	}
+	srl->exit = true;
 }
 
 void	srl_hook_del(t_keys key, t_spicyrl *srl)
