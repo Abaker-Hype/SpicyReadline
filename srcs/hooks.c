@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 10:55:13 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/14 12:20:32 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/21 12:19:52 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void	srl_init_hooks(void)
 	srl_add_hook(K_DOWN, srl_hook_history);
 	srl_add_hook(K_LEFT, srl_hook_cursor);
 	srl_add_hook(K_RIGHT, srl_hook_cursor);
+	srl_add_hook(K_END, NULL);
+	srl_add_hook(K_HOME, NULL);
 }
 
 void	srl_del_hooks(void)

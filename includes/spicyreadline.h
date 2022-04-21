@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/08 15:29:39 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/21 12:19:35 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ typedef enum keys{
 	K_CTRLC = 3,
 	K_CTRLD = 4,
 	K_TAB = '\t',
-	K_ENTER = '\r'
+	K_ENTER = '\r',
+	K_END = 4610843,
+	K_HOME = 4741915
 }	t_keys;
 
 typedef struct s_cursor{

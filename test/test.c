@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-/*int	main(void)
+int	main(void)
 {
 	char *line;
 
 	while (true)
 	{
-		line = spicy_readline("FUCK>", true);
+		line = spicy_readline("FUCK>", "hi", "there", true);
 		printf("Returned Line = %s", line);
 		fflush(NULL);
 		if (line)
@@ -19,8 +19,8 @@
 		}
 	}
 	free(line);
-}*/
-
+}
+/*
 typedef struct RGB{
 	int	r;
 	int	g;
@@ -109,3 +109,4 @@ int	main(void)
 		}
 	}
 }
+*/
