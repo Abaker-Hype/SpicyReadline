@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 18:35:25 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/14 13:13:15 by abaker           ###   ########.fr       */
+/*   Updated: 2022/04/21 12:27:44 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,9 @@ void	srl_hook_del(t_keys key, t_spicyrl *srl)
 
 void	srl_hook_cursor(t_keys key, t_spicyrl *srl)
 {
-	if (key == K_LEFT)
+	if (key == K_END)
+		srl->cursor = srl->buff->chars;
+	else if (key == K_LEFT)
 	{
 		if (srl->cursor == 0)
 			return ;
@@ -54,7 +56,6 @@ void	srl_hook_cursor(t_keys key, t_spicyrl *srl)
 			return ;
 		srl->cursor++;
 	}
-	write(STDOUT_FILENO, &key, 3);
 	srl->redisplay = true;
 }
 
