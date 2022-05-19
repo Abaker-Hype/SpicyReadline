@@ -3,35 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   display.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: abaker <HypeSwarm>                         +#+  +:+       +#+        */
+/*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 16:55:42 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/06 23:17:19 by abaker           ###   ########.fr       */
+/*   Updated: 2022/05/19 16:34:35 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static char	*srl_gen_banner(t_spicyrl *srl)
+static void	srl_gen_banner(t_spicyrl *srl)
 {
-	char	*rtn;
-
-	rtn = ft_strdup("\e[25l\e[u\e[0J");
+	if (srl->banner)
+		free(srl->banner);
+	srl->banner = ft_strdup("\e[25l\e[u\e[0J");
 	if (srl->user || srl->pwd)
-		rtn = ft_strjoinfree(rtn, srl_banner(srl), true, false);
-	return (rtn);
-}
-
-static char	*srl_gen_prompt(char *prompt)
-{
-	return (ft_strdup(prompt));
-}
-
-static char	*srl_gen_buff(char *buff)
-{
-	if (!buff)
-		return (NULL);
-	return (ft_strdup(buff));
+		srl->banner = ft_strjoinfree(srl->banner, srl_banner(srl), true, true);
+	srl->banner = ft_strjoinfree(srl->banner, srl->prompt, true, false);
 }
 
 static char	*srl_gen_cursor(t_spicyrl *srl)
@@ -56,16 +44,17 @@ void	srl_redisplay(t_spicyrl *srl)
 	srl_get_term_width(&srl->term);
 	if (!(srl->redisplay || srl->term.changed))
 		return ;
-	out = ft_strjoinfree(srl_gen_banner(srl), srl_gen_prompt(srl->prompt),
-			true, true);
-	tmp = srl_gen_buff(srl->buff->saved);
-	if (tmp)
-		out = ft_strjoinfree(out, tmp, true, true);
+	if (srl->term.changed || !srl->banner)
+		srl_gen_banner(srl);
+	out = ft_strdup(srl->banner);
+	if (srl->buff->saved)
+		out = ft_strjoinfree(out, srl->buff->saved, true, false);
 	tmp = srl_gen_cursor(srl);
 	if (tmp)
 		out = ft_strjoinfree(out, tmp, true, true);
 	out = ft_strjoinfree(out, "\e[25h", true, false);
 	write(STDOUT_FILENO, out, ft_strlen(out));
+	free(out);
 	srl->redisplay = false;
 	srl->term.changed = false;
 }

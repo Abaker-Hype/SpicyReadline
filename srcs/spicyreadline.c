@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/14 12:39:02 by abaker           ###   ########.fr       */
+/*   Updated: 2022/05/19 16:38:16 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ static char	*srl_exit(t_spicyrl *srl)
 	if (srl->buff->saved)
 		rtn = ft_strdup(srl->buff->saved);
 	srl_update_history(srl->buff, srl->hist);
+	free(srl->banner);
 	return (rtn);
 }
 

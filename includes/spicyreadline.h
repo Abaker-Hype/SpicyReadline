@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/21 12:19:35 by abaker           ###   ########.fr       */
+/*   Updated: 2022/05/19 16:29:52 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ struct s_spicyrl{
 	t_termdata	term;
 	t_buff		*buff;
 	t_cursor	cursor_init;
+	char		*banner;
 	char		*prompt;
 	char		*pwd;
 	char		*user;
