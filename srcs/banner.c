@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/06 22:53:16 by abaker            #+#    #+#             */
-/*   Updated: 2022/05/19 15:46:32 by abaker           ###   ########.fr       */
+/*   Updated: 2022/05/23 13:02:46 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,20 +38,21 @@ static char	*srl_add_info(char *str, char *info, int *len)
 	return (str);
 }
 
-char	*srl_banner(t_spicyrl *srl)
+void	srl_gen_banner(t_spicyrl *srl)
 {
-	char	*rtn;
 	int		i;
 
-	rtn = ft_strdup("\e[1;38;2;0;255;255m╞");
-	rtn = srl_add_fill(rtn, 5);
+	if (srl->banner)
+		free(srl->banner);
+	srl->banner = ft_strdup("\e[25l\e[u\e[0J\e[1;38;2;0;255;255m╞");
+	srl->banner = srl_add_fill(srl->banner, 5);
 	i = 8;
 	if (srl->user)
-		rtn = srl_add_info(rtn, srl->user, &i);
+		srl->banner = srl_add_info(srl->banner, srl->user, &i);
 	if (srl->pwd)
-		rtn = srl_add_info(rtn, srl->pwd, &i);
+		srl->banner = srl_add_info(srl->banner, srl->pwd, &i);
 	if (i < srl->term.win.ws_col)
-		rtn = srl_add_fill(rtn, srl->term.win.ws_col - i);
-	rtn = ft_strjoinfree(rtn, "╡\r\n╘╡\e[0m", true, false);
-	return (rtn);
+		srl->banner = srl_add_fill(srl->banner, srl->term.win.ws_col - i);
+	srl->banner = ft_strjoinfree(srl->banner, "╡\r\n╘╡\e[0m", true, false);
+	srl->banner = ft_strjoinfree(srl->banner, srl->prompt, true, false);
 }

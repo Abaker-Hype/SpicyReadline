@@ -6,14 +6,17 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/05/19 16:38:16 by abaker           ###   ########.fr       */
+/*   Updated: 2022/05/23 12:49:06 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static	void	srl_init(t_spicyrl *srl)
+static	void	srl_init(t_spicyrl *srl, char *prompt, char *user, char *pwd)
 {
+	srl->prompt = prompt;
+	srl->user = user;
+	srl->pwd = pwd;
 	srl->buff = srl_new_history();
 	srl->cursor_init = srl_get_cursor_pos();
 	if (srl->cursor_init.col > 1)
@@ -54,11 +57,8 @@ char	*spicy_readline(char *prompt, char *user, char *pwd, bool hist)
 	long		input;
 
 	ft_bzero(&srl, sizeof(t_spicyrl));
-	srl.prompt = prompt;
-	srl.user = user;
-	srl.pwd = pwd;
 	srl.hist = hist;
-	srl_init(&srl);
+	srl_init(&srl, prompt, user, pwd);
 	while (!srl.exit)
 	{
 		input = 0;

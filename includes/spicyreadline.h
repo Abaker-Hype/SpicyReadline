@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/05/19 16:29:52 by abaker           ###   ########.fr       */
+/*   Updated: 2022/05/23 13:02:20 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,6 @@ bool		srl_add_buffer(t_buff *buff, char *str, int *cursor);
 bool		srl_rmv_buffer(t_buff *buff, int *cursor);
 
 void		srl_redisplay(t_spicyrl *srl);
-char		*srl_banner(t_spicyrl *srl);
+void		srl_gen_banner(t_spicyrl *srl);
 
 #endif

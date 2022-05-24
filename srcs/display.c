@@ -6,21 +6,11 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 16:55:42 by abaker            #+#    #+#             */
-/*   Updated: 2022/05/19 16:34:35 by abaker           ###   ########.fr       */
+/*   Updated: 2022/05/23 13:03:08 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
-
-static void	srl_gen_banner(t_spicyrl *srl)
-{
-	if (srl->banner)
-		free(srl->banner);
-	srl->banner = ft_strdup("\e[25l\e[u\e[0J");
-	if (srl->user || srl->pwd)
-		srl->banner = ft_strjoinfree(srl->banner, srl_banner(srl), true, true);
-	srl->banner = ft_strjoinfree(srl->banner, srl->prompt, true, false);
-}
 
 static char	*srl_gen_cursor(t_spicyrl *srl)
 {
