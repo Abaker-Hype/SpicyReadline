@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/05/23 13:02:20 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/10 17:23:44 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,37 +44,42 @@ typedef struct s_cursor{
 }	t_cursor;
 
 typedef struct s_termdata{
-	struct termios	original;
+	int				rawfd;
 	int				flags;
+	struct termios	original;
 	struct winsize	win;
-	bool			changed;
+	t_cursor		cursor;
 }	t_termdata;
 
 typedef struct s_buff{
 	char			*saved;
 	int				size;
 	int				chars;
+	int				cursor;
 	struct s_buff	*prev;
 	struct s_buff	*next;
 }	t_buff;
+
+typedef struct s_banner{
+	char		*banner;
+	char		*user;
+	char		*pwd;
+	char		*prompt;
+	t_cursor	size;
+}	t_banner;
 
 typedef struct s_spicyrl	t_spicyrl;
 
 typedef struct s_hooks{
 	t_keys			key;
-	void			(*f)(t_keys, struct s_spicyrl *);
+	void			(*f)(t_keys, t_spicyrl *);
 	struct s_hooks	*next;
 }	t_hooks;
 
 struct s_spicyrl{
 	t_termdata	term;
 	t_buff		*buff;
-	t_cursor	cursor_init;
-	char		*banner;
-	char		*prompt;
-	char		*pwd;
-	char		*user;
-	int			cursor;
+	t_banner	banner;
 	bool		hist;
 	bool		redisplay;
 	bool		exit;
@@ -83,16 +88,22 @@ struct s_spicyrl{
 typedef struct s_srl_settings{
 }	t_srl_settings;
 
-char		*spicy_readline(char *prompt, char *user, char *pwd, bool hist);
+char		*spicy_readline(char *prompt, char *user, char *pwd, bool banner);
 void		srl_clean_up(void);
 int			srl_settings(int c, char **v);
 
-void		srl_enable_raw(t_termdata	*term);
+void		srl_init_term(t_termdata *term);
 void		srl_disable_raw(t_termdata	*term);
+bool		srl_update_term_width(t_termdata *term);
 
-t_cursor	srl_get_cursor_pos(void);
-void		srl_set_cursor_pos(t_cursor pos);
-void		srl_get_term_width(t_termdata *term);
+t_cursor	srl_get_cursor_pos(t_termdata *term);
+void		srl_set_cursor(t_cursor new, t_termdata *term);
+t_cursor	srl_calc_cursor_pos(t_cursor bsize, int buff, t_termdata *term);
+
+void		srl_init_banner(t_banner *banner, char *user,
+				char *pwd, char *prompt);
+void		srl_gen_banner(t_banner *banner, t_termdata *term);
+
 
 void		srl_init_hooks(void);
 void		srl_del_hooks(void);
@@ -107,10 +118,9 @@ void		srl_hook_del(t_keys key, t_spicyrl *srl);
 void		srl_hook_cursor(t_keys key, t_spicyrl *srl);
 void		srl_hook_history(t_keys key, t_spicyrl *srl);
 
-bool		srl_add_buffer(t_buff *buff, char *str, int *cursor);
-bool		srl_rmv_buffer(t_buff *buff, int *cursor);
+bool		srl_add_buffer(t_buff *buff, char *str);
+bool		srl_rmv_buffer(t_buff *buff);
 
 void		srl_redisplay(t_spicyrl *srl);
-void		srl_gen_banner(t_spicyrl *srl);
 
 #endif

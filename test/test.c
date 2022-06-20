@@ -1,112 +1,83 @@
-#include "spicyreadline.h"
+#include <unistd.h>
+#include <termios.h>
+#include <fcntl.h>
 #include <stdio.h>
-#include <sys/time.h>
+#include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
+#include "libft.h"
 
-int	main(void)
+typedef struct s_cursor{
+	int	row;
+	int	col;
+}	t_cursor;
+
+typedef struct s_termdata{
+	int				rawfd;
+	int				flags;
+	struct termios	old;
+	struct winsize	win;
+	t_cursor		cursor;
+	bool			changed;
+}	t_termdata;
+
+static char	*srl_move_cmd(int val, char *p, char *n)
 {
-	char *line;
+	char	*rtn;
+	char	*num;
+	bool	neg;
 
-	while (true)
+	rtn = ft_strdup("\e[");
+	neg = false;
+	if (val < 0)
 	{
-		line = spicy_readline("FUCK>", "hi", "there", true);
-		printf("Returned Line = %s", line);
-		fflush(NULL);
-		if (line)
-		{
-			if (!ft_strncmp("exit", line, 5))
-				break ;
-			free(line);
-		}
+		val *= -1;
+		neg = true;
 	}
-	free(line);
-}
-/*
-typedef struct RGB{
-	int	r;
-	int	g;
-	int	b;
-}	RGB;
-
-static double	gettime(void)
-{
-	struct timeval	now;
-
-	gettimeofday(&now, NULL);
-	return ((now.tv_sec * 1000) + (now.tv_usec / 1000));
-}
-
-bool	fpsupdate(int fps)
-{
-	static double	last = 0;
-	double			now;
-
-	now = gettime();
-	if (now - last < 1000 / fps)
-		return (false);
-	last = now;
-	return (true);
-}
-
-
-RGB	invert(RGB rgb)
-{
-	RGB	invert;
-
-	invert.r = 255 - rgb.r;
-	invert.g = 255 - rgb.g;
-	invert.b = 255 - rgb.b;
-	return (invert);
-}
-
-void	updatecol(int *a, int *b, int *c)
-{
-	if (*b < 255 && *c == 0)
-		(*b)++;
-	else if (*c > 0 && *b == 0)
-		(*c)--;
+	rtn = ft_strjoinfree(rtn, ft_itoa(val), true, true);
+	if (!neg)
+		rtn = ft_strjoinfree(rtn, p, true, false);
 	else
-		(*a)--;
+		rtn = ft_strjoinfree(rtn, n, true, false);
+	return (rtn);
 }
 
-RGB	updatergb(RGB rgb)
+void	srl_set_cursor(t_cursor new, t_termdata *term)
 {
-	if (rgb.r == 255)
-		updatecol(&rgb.r, &rgb.g, &rgb.b);
-	else if (rgb.g == 255)
-		updatecol(&rgb.g, &rgb.b, &rgb.r);
-	else if (rgb.b == 255)
-		updatecol(&rgb.b, &rgb.r, &rgb.g);
-	return (rgb);
+	char	*out;
+
+	if (new.col == term->cursor.col && new.row == term->cursor.row)
+		return ;
+	if (new.row != term->cursor.row)
+	{
+		out = srl_move_cmd(new.row - term->cursor.row, "B", "A");
+		write(term->rawfd, out, ft_strlen(out));
+		free(out);
+	}
+	if (new.col != term->cursor.col)
+	{
+		out = srl_move_cmd(new.col - term->cursor.col, "C", "D");
+		write(term->rawfd, out, ft_strlen(out));
+		free(out);
+	}
+	term->cursor = new;
 }
 
 int	main(void)
 {
-	RGB	rgb = {255, 0, 0};
-	RGB	irgb;
-	RGB	tmp;
-	int	i;
+	t_termdata	data;
+	t_cursor	c;
 
-	while (true)
-	{
-		if (fpsupdate(360))
-		{
-			i = 0;
-			tmp = rgb;
-			irgb = invert(rgb);
-			printf("\r");
-			while (i++ < 100)
-			{
-				printf("\e[38;2;%i;%i;%im", rgb.r, rgb.g, rgb.b);
-				printf("\e[48;2;%i;%i;%im", irgb.r, irgb.g, irgb.b);
-				printf("E");
-				for (int j = 0; j < 20; j++)
-					rgb = updatergb(rgb);
-				irgb = invert(rgb);
-			}
-			printf("\e[0m");
-			fflush(NULL);
-			rgb = updatergb(tmp);
-		}
-	}
+	ft_bzero(&data, sizeof(data));
+	ft_bzero(&c, sizeof(c));
+	data.rawfd = STDOUT_FILENO;
+	c.col = 10;
+	srl_set_cursor(c, &data);
+	data.cursor.col += write(data.rawfd, "A", 1);
+	c.row = 1;
+	srl_set_cursor(c, &data);
+	data.cursor.col += write(data.rawfd, "B", 1);
+	srl_set_cursor(c, &data);
+	data.cursor.col += write(data.rawfd, "C", 1);
+	return (0);
 }
-*/

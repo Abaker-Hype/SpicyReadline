@@ -6,45 +6,41 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 16:55:42 by abaker            #+#    #+#             */
-/*   Updated: 2022/05/23 13:03:08 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/10 17:39:14 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static char	*srl_gen_cursor(t_spicyrl *srl)
+static void	srl_clear_display(t_termdata *term)
 {
-	char	*rtn;
+	t_cursor	start;
 
-	rtn = NULL;
-	if (srl->cursor < srl->buff->chars)
-	{
-		rtn = ft_strjoinfree("\e[", ft_itoa(srl->buff->chars - srl->cursor),
-				false, true);
-		rtn = ft_strjoinfree(rtn, "D", true, false);
-	}
-	return (rtn);
+	write(term->rawfd, "\e[25l", 6);
+	ft_bzero(&start, sizeof(start));
+	srl_set_cursor(start, term);
+	write(term->rawfd, "\e[0J", 5);
 }
 
 void	srl_redisplay(t_spicyrl *srl)
 {
 	char	*out;
-	char	*tmp;
+	bool	update;
 
-	srl_get_term_width(&srl->term);
-	if (!(srl->redisplay || srl->term.changed))
+	if (!srl->redisplay)
 		return ;
-	if (srl->term.changed || !srl->banner)
-		srl_gen_banner(srl);
-	out = ft_strdup(srl->banner);
+	update = srl_update_term_width(&srl->term) || srl->banner.banner == NULL;
+	if (!srl->banner.banner)
+		srl_gen_banner(&srl->banner, &srl->term);
+	out = ft_strdup(srl->banner.banner);
 	if (srl->buff->saved)
 		out = ft_strjoinfree(out, srl->buff->saved, true, false);
-	tmp = srl_gen_cursor(srl);
-	if (tmp)
-		out = ft_strjoinfree(out, tmp, true, true);
-	out = ft_strjoinfree(out, "\e[25h", true, false);
-	write(STDOUT_FILENO, out, ft_strlen(out));
+	srl_clear_display(&srl->term);
+	write(STDERR_FILENO, out, ft_strlen(out));
+	srl->term.cursor = srl_calc_cursor_pos(srl->banner.size,
+			srl->buff->chars, &srl->term);
+	srl_set_cursor(srl_calc_cursor_pos(srl->banner.size,
+			srl->buff->cursor, &srl->term), &srl->term);
 	free(out);
 	srl->redisplay = false;
-	srl->term.changed = false;
 }

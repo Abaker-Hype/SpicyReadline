@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/05/23 12:49:06 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/10 17:38:40 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,34 +14,28 @@
 
 static	void	srl_init(t_spicyrl *srl, char *prompt, char *user, char *pwd)
 {
-	srl->prompt = prompt;
-	srl->user = user;
-	srl->pwd = pwd;
-	srl->buff = srl_new_history();
-	srl->cursor_init = srl_get_cursor_pos();
-	if (srl->cursor_init.col > 1)
-	{
-		write(STDOUT_FILENO, "\e[7;1m%\e[0m\n", 13);
-		srl->cursor_init.col = 1;
-		srl->cursor_init.row++;
-	}
-	write(STDOUT_FILENO, "\e[s", 4);
-	srl_get_term_width(&srl->term);
+	ft_bzero(srl, sizeof(*srl));
+	srl_init_term(&srl->term);
 	srl_init_hooks();
-	srl_redisplay(srl);
-	srl_enable_raw(&srl->term);
+	srl_init_banner(&srl->banner, user, pwd, prompt);
+	srl->buff = srl_new_history();
+	srl->redisplay = true;
 }
 
 static char	*srl_exit(t_spicyrl *srl)
 {
 	char	*rtn;
 
+	write(srl->term.rawfd, "\r\n", 2);
 	srl_disable_raw(&srl->term);
 	rtn = NULL;
 	if (srl->buff->saved)
+	{
 		rtn = ft_strdup(srl->buff->saved);
-	srl_update_history(srl->buff, srl->hist);
-	free(srl->banner);
+		srl_update_history(srl->buff, srl->hist);
+	}
+	if (srl->banner.banner)
+		free(srl->banner.banner);
 	return (rtn);
 }
 
@@ -56,21 +50,18 @@ char	*spicy_readline(char *prompt, char *user, char *pwd, bool hist)
 	t_spicyrl	srl;
 	long		input;
 
-	ft_bzero(&srl, sizeof(t_spicyrl));
-	srl.hist = hist;
 	srl_init(&srl, prompt, user, pwd);
+	srl.hist = hist;
 	while (!srl.exit)
 	{
 		input = 0;
 		srl_redisplay(&srl);
-		while (read(STDIN_FILENO, &input, sizeof(long) - 1) > 0)
+		while (read(srl.term.rawfd, &input, sizeof(long) - 1) > 0)
 		{
 			if (!srl_check_hooks(&srl, input))
-				srl.redisplay = srl_add_buffer(srl.buff,
-						(char *)&input, &srl.cursor);
+				srl.redisplay = srl_add_buffer(srl.buff, (char *)&input);
 			input = 0;
 		}
 	}
-	write(STDOUT_FILENO, "\r\n", 2);
 	return (srl_exit(&srl));
 }

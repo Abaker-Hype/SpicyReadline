@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 18:35:25 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/21 12:27:44 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/10 17:21:07 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	srl_hook_return(t_keys key, t_spicyrl *srl)
 		if (key == K_CTRLD)
 			srl->buff->saved = ft_strdup("exit");
 		else
-			write(STDOUT_FILENO, "^C", 2);
+			write(STDERR_FILENO, "^C", 2);
 	}
 	srl->exit = true;
 }
@@ -31,30 +31,30 @@ void	srl_hook_del(t_keys key, t_spicyrl *srl)
 {
 	if (key == K_DELF)
 	{
-		if (srl->cursor == srl->buff->chars)
+		if (srl->buff->cursor == srl->buff->chars)
 			return ;
-		srl->cursor++;
+		srl->buff->cursor++;
 	}
-	if (srl->cursor == 0)
+	if (srl->buff->cursor == 0)
 		return ;
-	srl->redisplay = srl_rmv_buffer(srl->buff, &srl->cursor);
+	srl->redisplay = srl_rmv_buffer(srl->buff);
 }
 
 void	srl_hook_cursor(t_keys key, t_spicyrl *srl)
 {
 	if (key == K_END)
-		srl->cursor = srl->buff->chars;
+		srl->buff->cursor = srl->buff->chars;
 	else if (key == K_LEFT)
 	{
-		if (srl->cursor == 0)
+		if (srl->buff->cursor == 0)
 			return ;
-		srl->cursor--;
+		srl->buff->cursor--;
 	}
 	else
 	{
-		if (srl->cursor == srl->buff->chars)
+		if (srl->buff->cursor == srl->buff->chars)
 			return ;
-		srl->cursor++;
+		srl->buff->cursor++;
 	}
 	srl->redisplay = true;
 }
@@ -75,6 +75,6 @@ void	srl_hook_history(t_keys key, t_spicyrl *srl)
 			return ;
 		srl->buff = srl->buff->next;
 	}
-	srl->cursor = srl->buff->chars;
+	srl->buff->cursor = srl->buff->chars;
 	srl->redisplay = true;
 }
