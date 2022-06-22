@@ -5,69 +5,93 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/23 19:24:01 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/10 15:43:50 by abaker           ###   ########.fr       */
+/*   Created: 2022/06/21 13:35:56 by abaker            #+#    #+#             */
+/*   Updated: 2022/06/22 16:42:43 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static int	srl_char_pos(char *str, int pos)
+t_buff	*srl_new_buffer(bool blank)
 {
-	int	i;
-	int	c;
+	t_buff	*new;
 
-	i = 0;
-	c = 0;
-	if (!str)
-		return (0);
-	while (str[i] && c++ != pos)
-		i += ft_charsize(str[i]);
-	return (i);
+	new = ft_calloc(1, sizeof(*new));
+	if (!new)
+		return (NULL);
+	if (!blank)
+		srl_clone_history(new);
+	return (new);
 }
 
-bool	srl_add_buffer(t_buff *buff, char *str)
+void	srl_add_buff(t_buff *buff, char *str)
 {
-	char	*tmp;
-	int		size;
+	char	*new;
+	int		len;
 
-	size = buff->size + ft_strlen(str) + 1;
-	tmp = ft_calloc(size, sizeof(char));
-	if (!tmp)
-		return (false);
-	ft_strlcat(tmp, buff->saved, srl_char_pos(buff->saved, buff->cursor) + 1);
-	ft_strlcat(tmp, str, size);
-	ft_strlcat(tmp, &buff->saved[srl_char_pos(buff->saved, buff->cursor)],
-		size);
-	if (buff->saved)
-		free(buff->saved);
-	buff->saved = tmp;
-	buff->size = size - 1;
-	size = ft_charcount(str);
-	buff->chars += size;
-	buff->cursor += size;
-	return (true);
+	len = ft_strlen(str);
+	new = ft_calloc(buff->size + len + 1, sizeof (*new));
+	if (!new)
+		return ;
+	buff->size += len;
+	ft_strlcpy(new, buff->buff, buff->ins + 1);
+	ft_strlcpy(&new[buff->ins], str, buff->size + 1);
+	if (buff->buff)
+	{
+		ft_strlcpy(&new[buff->ins + len], &buff->buff[buff->ins],
+			buff->size + 1);
+		free(buff->buff);
+	}
+	buff->buff = new;
+	buff->chars += ft_charcount(str);
+	buff->ins += len;
+	buff->pos += ft_charcount(str);
+	buff->update = true;
 }
 
-bool	srl_rmv_buffer(t_buff *buff)
+void	srl_rmv_buff(t_buff *buff, bool left)
 {
-	char	*tmp;
-	int		size;
+	char	*new;
+	int		charsize;
 
-	size = buff->size
-		- ft_charsize(buff->saved[srl_char_pos(buff->saved, buff->cursor)]);
-	tmp = ft_calloc(size + 1, sizeof(char));
-	if (!tmp)
-		return (false);
-	ft_strlcat(tmp, buff->saved,
-		srl_char_pos(buff->saved, buff->cursor - 1) + 1);
-	ft_strlcat(tmp, &buff->saved[srl_char_pos(buff->saved, buff->cursor)],
-		size + 1);
-	if (buff->saved)
-		free(buff->saved);
-	buff->saved = tmp;
-	buff->size = size;
+	if ((left && buff->pos == 0) || (!left && buff->pos == buff->chars))
+		return ;
+	new = ft_calloc(buff->size, sizeof(*new));
+	if (!new)
+		return ;
+	if (left)
+		srl_update_buff_ins(buff, true, false);
+	charsize = ft_charsize(buff->buff[buff->ins]);
+	buff->size -= charsize;
+	ft_strlcpy(new, buff->buff, buff->ins + 1);
+	ft_strlcpy(&new[buff->ins],
+		&buff->buff[buff->ins + charsize], buff->size + 1);
 	buff->chars--;
-	buff->cursor--;
-	return (true);
+	free(buff->buff);
+	buff->buff = new;
+	buff->update = true;
+}
+
+void	srl_update_buff_ins(t_buff *buff, bool left, bool end)
+{
+	int	offset;
+
+	offset = 1;
+	if (left)
+		offset = -1;
+	if (buff->ins + offset < 0 || buff->ins + offset > buff->size)
+		return ;
+	if (end)
+	{
+		buff->ins = !left * buff->size;
+		buff->pos = !left * buff->chars;
+	}
+	else
+	{
+		buff->ins += offset;
+		buff->pos += offset;
+		while (ft_charsize(buff->buff[buff->ins]) == -1)
+			buff->ins += offset;
+	}
+	buff->update = true;
 }

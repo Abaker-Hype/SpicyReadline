@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/04 16:36:00 by abaker            #+#    #+#             */
-/*   Updated: 2022/04/14 13:13:59 by abaker           ###   ########.fr       */
+/*   Created: 2022/06/21 13:37:51 by abaker            #+#    #+#             */
+/*   Updated: 2022/06/22 16:46:06 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,81 +14,83 @@
 
 static t_buff	**g_history(void)
 {
-	static t_buff	*hist = NULL;
+	static t_buff	*history = NULL;
 
-	return (&hist);
+	return (&history);
 }
 
-t_buff	*srl_new_history(void)
+static t_buff	*srl_clone_buff(t_buff *buff)
 {
-	t_buff	*new;
+	t_buff	*clone;
+
+	clone = ft_calloc(1, sizeof(*clone));
+	if (!clone)
+		return (NULL);
+	if (buff->buff)
+		srl_add_buff(clone, buff->buff);
+	return (clone);
+}
+
+void	srl_add_history(t_buff *buff)
+{
+	t_buff	*last;
+
+	if (!(buff->buff && buff->chars))
+		return ;
+	last = *g_history();
+	while (last && last->next)
+		last = last->next;
+	if (!last)
+		*g_history() = srl_clone_buff(buff);
+	else if (ft_strncmp(last->buff, buff->buff, last->size + 1))
+	{
+		buff = srl_clone_buff(buff);
+		buff->prev = last;
+		last->next = buff;
+	}
+}
+
+void	srl_clone_history(t_buff *add)
+{
+	t_buff	*clone;
 	t_buff	*curr;
 
-	new = ft_calloc(1, sizeof(*new));
-	if (!new)
-		return (NULL);
+	clone = NULL;
 	curr = *g_history();
-	if (!curr)
-		*g_history() = new;
-	else
+	while (curr)
 	{
-		while (curr->next)
-			curr = curr->next;
-		curr->next = new;
-		new->prev = curr;
+		if (!clone)
+			clone = srl_clone_buff(curr);
+		else
+		{
+			clone->next = srl_clone_buff(curr);
+			clone->next->prev = clone;
+			clone = clone->next;
+		}
+		curr = curr->next;
 	}
-	return (new);
+	add->prev = clone;
+	if (clone)
+		clone->next = add;
 }
 
-void	srl_del_history(t_buff *del)
+void	srl_clear_history(t_buff *buff)
 {
 	t_buff	*next;
-	bool	all;
 
-	all = !del;
-	if (!del)
-		del = *g_history();
-	while (del)
+	if (!buff)
 	{
-		next = del->next;
-		if (!del->prev)
-			*g_history() = next;
-		else
-			del->prev->next = next;
-		if (next)
-			next->prev = del->prev;
-		if (del->saved)
-			free(del->saved);
-		free(del);
-		if (!all)
-			return ;
-		del = next;
+		buff = *g_history();
+		*g_history() = NULL;
 	}
-}
-
-void	srl_update_history(t_buff *buff, bool hist)
-{
-	t_buff	*b;
-
-	if (!hist)
-		return (srl_del_history(buff));
-	if (!buff->next)
+	while (buff && buff->prev)
+		buff = buff->prev;
+	while (buff)
 	{
-		b = buff->prev;
-		if (!buff->saved
-			|| (b && ft_strncmp(buff->saved, b->saved, b->size + 1) == 0))
-			return (srl_del_history(buff));
-	}
-	else
-	{
-		b = buff->next;
-		while (b->next)
-			b = b->next;
-		if (b->prev == buff)
-			return (srl_del_history(b));
-		free(b->saved);
-		b->saved = ft_strdup(buff->saved);
-		b->size = buff->size;
-		b->chars = buff->chars;
+		next = buff->next;
+		if (buff->buff)
+			free(buff->buff);
+		free(buff);
+		buff = next;
 	}
 }

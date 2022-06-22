@@ -5,76 +5,43 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/03/31 18:35:25 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/10 17:21:07 by abaker           ###   ########.fr       */
+/*   Created: 2022/06/21 13:15:58 by abaker            #+#    #+#             */
+/*   Updated: 2022/06/22 16:38:42 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-void	srl_hook_return(t_keys key, t_spicyrl *srl)
+void	srl_hook_exit(t_keys key, t_srl *srl)
 {
-	if (key == K_CTRLC || key == K_CTRLD)
-	{
-		if (srl->buff->saved)
-			free(srl->buff->saved);
-		srl->buff->saved = NULL;
-		if (key == K_CTRLD)
-			srl->buff->saved = ft_strdup("exit");
-		else
-			write(STDERR_FILENO, "^C", 2);
-	}
+	if (key == K_CTRLD)
+		srl->buffer->buff = ft_strdup("exit");
 	srl->exit = true;
 }
 
-void	srl_hook_del(t_keys key, t_spicyrl *srl)
+void	srl_hook_del(t_keys key, t_srl *srl)
 {
-	if (key == K_DELF)
-	{
-		if (srl->buff->cursor == srl->buff->chars)
-			return ;
-		srl->buff->cursor++;
-	}
-	if (srl->buff->cursor == 0)
-		return ;
-	srl->redisplay = srl_rmv_buffer(srl->buff);
+	srl_rmv_buff(srl->buffer, key == K_DEL);
 }
 
-void	srl_hook_cursor(t_keys key, t_spicyrl *srl)
+void	srl_hook_cursor(t_keys key, t_srl *srl)
 {
-	if (key == K_END)
-		srl->buff->cursor = srl->buff->chars;
-	else if (key == K_LEFT)
-	{
-		if (srl->buff->cursor == 0)
-			return ;
-		srl->buff->cursor--;
-	}
-	else
-	{
-		if (srl->buff->cursor == srl->buff->chars)
-			return ;
-		srl->buff->cursor++;
-	}
-	srl->redisplay = true;
+	srl_update_buff_ins(srl->buffer,
+		key == K_LEFT || key == K_HOME, key == K_HOME || key == K_END);
 }
 
-void	srl_hook_history(t_keys key, t_spicyrl *srl)
+void	srl_hook_history(t_keys key, t_srl *srl)
 {
-	if (!srl->hist)
+	if (srl->blank)
 		return ;
-	if (key == K_UP)
+	if (key == K_UP && srl->buffer->prev)
 	{
-		if (!srl->buff->prev)
-			return ;
-		srl->buff = srl->buff->prev;
+		srl->buffer = srl->buffer->prev;
+		srl->buffer->update = true;
 	}
-	else
+	else if (key == K_DOWN && srl->buffer->next)
 	{
-		if (!srl->buff->next)
-			return ;
-		srl->buff = srl->buff->next;
+		srl->buffer = srl->buffer->next;
+		srl->buffer->update = true;
 	}
-	srl->buff->cursor = srl->buff->chars;
-	srl->redisplay = true;
 }

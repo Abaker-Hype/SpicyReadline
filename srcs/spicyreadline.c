@@ -6,62 +6,63 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/10 17:38:40 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/22 16:50:30 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
 
-static	void	srl_init(t_spicyrl *srl, char *prompt, char *user, char *pwd)
+static t_srl	*srl_init(char *prompt, char *user, char *pwd, bool blank)
 {
-	ft_bzero(srl, sizeof(*srl));
+	t_srl	*srl;
+
+	srl = ft_calloc(1, sizeof(*srl));
+	if (!srl)
+		return (NULL);
 	srl_init_term(&srl->term);
-	srl_init_hooks();
-	srl_init_banner(&srl->banner, user, pwd, prompt);
-	srl->buff = srl_new_history();
-	srl->redisplay = true;
+	srl->buffer = srl_new_buffer(blank);
+	srl->prompt = prompt;
+	srl->user = user;
+	srl->pwd = pwd;
+	srl->blank = blank;
+	return (srl);
 }
 
-static char	*srl_exit(t_spicyrl *srl)
+static char	*srl_exit(t_srl *srl)
 {
 	char	*rtn;
 
-	write(srl->term.rawfd, "\r\n", 2);
-	srl_disable_raw(&srl->term);
 	rtn = NULL;
-	if (srl->buff->saved)
-	{
-		rtn = ft_strdup(srl->buff->saved);
-		srl_update_history(srl->buff, srl->hist);
-	}
-	if (srl->banner.banner)
-		free(srl->banner.banner);
+	if (srl->buffer->chars)
+		rtn = ft_strdup(srl->buffer->buff);
+	srl_clear_history(srl->buffer);
+	write(srl->term.rawfd, "\e[E", 4);
+	srl_disable_raw(&srl->term);
+	free(srl);
 	return (rtn);
 }
 
 void	srl_clean_up(void)
 {
 	srl_del_hooks();
-	srl_del_history(NULL);
+	srl_clear_history(NULL);
 }
 
-char	*spicy_readline(char *prompt, char *user, char *pwd, bool hist)
+char	*spicy_readline(char *prompt, char *user, char *pwd, bool blank)
 {
-	t_spicyrl	srl;
-	long		input;
+	t_srl	*srl;
+	long	input;
 
-	srl_init(&srl, prompt, user, pwd);
-	srl.hist = hist;
-	while (!srl.exit)
+	srl = srl_init(prompt, user, pwd, blank);
+	if (!srl)
+		return (NULL);
+	while (!srl->exit)
 	{
 		input = 0;
-		srl_redisplay(&srl);
-		while (read(srl.term.rawfd, &input, sizeof(long) - 1) > 0)
-		{
-			if (!srl_check_hooks(&srl, input))
-				srl.redisplay = srl_add_buffer(srl.buff, (char *)&input);
-			input = 0;
-		}
+		srl_redisplay(srl);
+		while (read(srl->term.rawfd, &input, sizeof(long) - 1) > 0
+			&& !srl_check_hooks(srl, input))
+			srl_add_buff(srl->buffer, (char *)&input);
 	}
-	return (srl_exit(&srl));
+	return (srl_exit(srl));
 }

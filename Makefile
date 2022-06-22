@@ -47,7 +47,7 @@ norm:
 	@norminette $(SRCS) $(INC)
 	@make norm -s -C $(LIBDIR)
 
-testing: $(LIB)
-	@$(CC) test/*.c -L$(LIBDIR) -lall $(LIBFLAGS) -o test/test
-	@test/test <test/test.c
-	@rm test/test
+testing: $(NAME) $(LIB)
+	@clear
+	@$(CC) test/*.c -L$(LIBDIR) -lall -L. -lspicyrl $(LIBFLAGS) -I$(INC) -o test/test
+	@test/test
