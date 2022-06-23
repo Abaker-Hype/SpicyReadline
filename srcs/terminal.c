@@ -6,11 +6,12 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:19:21 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/22 18:43:52 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/23 17:27:10 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "spicyreadline.h"
+#include <fcntl.h>
 #include <sys/ioctl.h>
 
 static void	srl_enable_raw(t_term *term)
@@ -21,12 +22,15 @@ static void	srl_enable_raw(t_term *term)
 	noblock = 1;
 	term->rawfd = open(ttyname(STDERR_FILENO), O_RDWR | O_NOCTTY | O_NDELAY);
 	tcgetattr(term->rawfd, &term->orig);
+	raw = term->orig;
 	raw.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
 			| INLCR | IGNCR | ICRNL | IXON);
 	raw.c_oflag &= ~OPOST;
 	raw.c_cflag &= ~(CSIZE | PARENB);
 	raw.c_cflag |= CS8;
 	raw.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+	raw.c_cc[VMIN] = 0;
+	raw.c_cc[VTIME] = 1;
 	tcsetattr(term->rawfd, TCSANOW, &raw);
 	ioctl(term->rawfd, FIONBIO, &noblock);
 }
@@ -51,7 +55,6 @@ static int	srl_get_cursor_col(int rawfd)
 		else if (b && ft_isdigit(c))
 			col = col * 10 + c - '0';
 	}
-	tcflush(rawfd, TCIOFLUSH);
 	return (col);
 }
 

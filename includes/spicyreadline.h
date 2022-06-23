@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/22 17:50:45 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/23 17:27:39 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include "libft.h"
 # include <termios.h>
-# include <fcntl.h>
 
 typedef enum keys{
 	K_DELF = 2117294875,
@@ -58,16 +57,25 @@ struct s_buff{
 	t_buff	*next;
 };
 
-typedef struct s_srl
-{
-	t_term	term;
-	t_buff	*buffer;
-	bool	exit;
+typedef struct s_banner{
 	char	*banner;
 	char	*prompt;
 	char	*user;
 	char	*pwd;
-	bool	blank;
+	int		size;
+	int		promptlen;
+	int		userlen;
+	int		pwdlen;
+}	t_banner;
+
+
+typedef struct s_srl
+{
+	t_term		term;
+	t_buff		*buffer;
+	t_banner	banner;
+	bool		exit;
+	bool		blank;
 }	t_srl;
 
 //spicyreadline.c
@@ -102,4 +110,5 @@ void	srl_update_buff_ins(t_buff *buff, bool left, bool full);
 
 //redisplay.c
 void	srl_redisplay(t_srl *srl);
+
 #endif

@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/22 16:50:30 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/23 17:22:31 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ static t_srl	*srl_init(char *prompt, char *user, char *pwd, bool blank)
 		return (NULL);
 	srl_init_term(&srl->term);
 	srl->buffer = srl_new_buffer(blank);
-	srl->prompt = prompt;
-	srl->user = user;
-	srl->pwd = pwd;
+	srl->banner.prompt = prompt;
+	srl->banner.user = user;
+	srl->banner.pwd = pwd;
 	srl->blank = blank;
 	return (srl);
 }
