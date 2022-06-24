@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/23 17:22:31 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/24 11:14:52 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,10 @@ static char	*srl_exit(t_srl *srl)
 
 	rtn = NULL;
 	if (srl->buffer->chars)
+	{
 		rtn = ft_strdup(srl->buffer->buff);
+		srl_add_history(srl->buffer);
+	}
 	srl_clear_history(srl->buffer);
 	write(srl->term.rawfd, "\e[E", 4);
 	srl_disable_raw(&srl->term);
@@ -60,7 +63,7 @@ char	*spicy_readline(char *prompt, char *user, char *pwd, bool blank)
 	{
 		input = 0;
 		srl_redisplay(srl);
-		while (read(srl->term.rawfd, &input, sizeof(long) - 1) > 0
+		if (read(srl->term.rawfd, &input, sizeof(long) - 1) > 0
 			&& !srl_check_hooks(srl, input))
 			srl_add_buff(srl->buffer, (char *)&input);
 	}

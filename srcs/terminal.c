@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:19:21 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/23 17:27:10 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/24 11:00:02 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	srl_enable_raw(t_term *term)
 	int				noblock;
 
 	noblock = 1;
-	term->rawfd = open(ttyname(STDERR_FILENO), O_RDWR | O_NOCTTY | O_NDELAY);
+	term->rawfd = open(ttyname(STDIN_FILENO), O_RDWR);
 	tcgetattr(term->rawfd, &term->orig);
 	raw = term->orig;
 	raw.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP
@@ -32,30 +32,22 @@ static void	srl_enable_raw(t_term *term)
 	raw.c_cc[VMIN] = 0;
 	raw.c_cc[VTIME] = 1;
 	tcsetattr(term->rawfd, TCSANOW, &raw);
-	ioctl(term->rawfd, FIONBIO, &noblock);
 }
 
 static int	srl_get_cursor_col(int rawfd)
 {
-	int		col;
-	char	c;
-	bool	b;
+	char	output[20];
+	int		i;
 
-	c = '\0';
-	b = false;
-	col = 0;
-	read(rawfd, NULL, 0);
+	i = 0;
 	write(rawfd, "\e[6n", 5);
-	while (c != 'R')
-	{
-		if (read(rawfd, &c, 1) == -1)
-			break ;
-		if (c == ';')
-			b = true;
-		else if (b && ft_isdigit(c))
-			col = col * 10 + c - '0';
-	}
-	return (col);
+	write(rawfd, "WHY DO I NEED THIS???", 0);
+	ft_bzero(output, sizeof(output));
+	if (read(rawfd, &output, sizeof(output) - 1) > 0)
+		while (output[i])
+			if (output[i++] == ';')
+				return (ft_atoi(&output[i]));
+	return (-1);
 }
 
 void	srl_disable_raw(t_term *term)
@@ -85,7 +77,6 @@ bool	srl_update_term_width(t_term *term)
 void	srl_init_term(t_term *term)
 {
 	srl_enable_raw(term);
-	srl_update_term_width(term);
 	if (srl_get_cursor_col(term->rawfd) > 1)
 		write(term->rawfd, "\e[7;1m%\e[0m\r\n", 13);
 }

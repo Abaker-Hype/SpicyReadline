@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 13:35:56 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/22 16:42:43 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/24 11:13:01 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,24 +51,17 @@ void	srl_add_buff(t_buff *buff, char *str)
 
 void	srl_rmv_buff(t_buff *buff, bool left)
 {
-	char	*new;
 	int		charsize;
 
 	if ((left && buff->pos == 0) || (!left && buff->pos == buff->chars))
-		return ;
-	new = ft_calloc(buff->size, sizeof(*new));
-	if (!new)
 		return ;
 	if (left)
 		srl_update_buff_ins(buff, true, false);
 	charsize = ft_charsize(buff->buff[buff->ins]);
 	buff->size -= charsize;
-	ft_strlcpy(new, buff->buff, buff->ins + 1);
-	ft_strlcpy(&new[buff->ins],
-		&buff->buff[buff->ins + charsize], buff->size + 1);
+	ft_memmove(&buff->buff[buff->ins], &buff->buff[buff->ins + charsize], buff->size - buff->ins);
+	ft_bzero(&buff->buff[buff->size], charsize);
 	buff->chars--;
-	free(buff->buff);
-	buff->buff = new;
 	buff->update = true;
 }
 
