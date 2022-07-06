@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/24 11:14:52 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/24 15:09:23 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,14 @@ static t_srl	*srl_init(char *prompt, char *user, char *pwd, bool blank)
 	srl = ft_calloc(1, sizeof(*srl));
 	if (!srl)
 		return (NULL);
-	srl_init_term(&srl->term);
+	srl_init_term(&srl->term, !blank);
 	srl->buffer = srl_new_buffer(blank);
 	srl->banner.prompt = prompt;
+	srl->banner.promptlen = ft_strlen(prompt);
 	srl->banner.user = user;
+	srl->banner.userlen = ft_strlen(user);
 	srl->banner.pwd = pwd;
+	srl->banner.pwdlen = ft_strlen(pwd);
 	srl->blank = blank;
 	return (srl);
 }
@@ -33,6 +36,7 @@ static char	*srl_exit(t_srl *srl)
 	char	*rtn;
 
 	rtn = NULL;
+	free(srl->banner.banner);
 	if (srl->buffer->chars)
 	{
 		rtn = ft_strdup(srl->buffer->buff);

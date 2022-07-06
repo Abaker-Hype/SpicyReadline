@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/22 12:04:42 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/24 10:59:18 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/24 15:08:07 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,12 @@ void	srl_redisplay(t_srl *srl)
 
 	if (!(srl_update_term_width(&srl->term) || srl->buffer->update))
 		return ;
-	ft_putstr_fd("\e[25l\r\e[0K", srl->term.rawfd);
-	ft_putstr_fd(srl->banner.prompt, srl->term.rawfd);
+	srl_update_banner(srl);
+	if (srl->blank)
+		ft_putstr_fd("\e[25l\r\e[0J", srl->term.rawfd);
+	else
+		ft_putstr_fd("\e[25l\e[1F\e[0J", srl->term.rawfd);
+	ft_putstr_fd(srl->banner.banner, srl->term.rawfd);
 	ft_putstr_fd(srl->buffer->buff, srl->term.rawfd);
 	cursor = ft_calloc(15, sizeof(*cursor));
 	if (srl->buffer->pos < srl->buffer->chars)

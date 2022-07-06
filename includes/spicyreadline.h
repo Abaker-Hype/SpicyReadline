@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/23 17:27:39 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/24 15:08:49 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ char	*spicy_readline(char *prompt, char *user, char *pwd, bool blank);
 void	srl_clean_up(void);
 
 //terminal.c
-void	srl_init_term(t_term *term);
+void	srl_init_term(t_term *term, bool nl);
 void	srl_disable_raw(t_term *term);
 bool	srl_update_term_width(t_term *term);
 
@@ -111,4 +111,6 @@ void	srl_update_buff_ins(t_buff *buff, bool left, bool full);
 //redisplay.c
 void	srl_redisplay(t_srl *srl);
 
+//banner.c
+void	srl_update_banner(t_srl *srl);
 #endif

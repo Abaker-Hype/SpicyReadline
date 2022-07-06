@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:19:21 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/24 11:00:02 by abaker           ###   ########.fr       */
+/*   Updated: 2022/06/28 12:23:40 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,11 @@ bool	srl_update_term_width(t_term *term)
 	return (false);
 }
 
-void	srl_init_term(t_term *term)
+void	srl_init_term(t_term *term, bool nl)
 {
 	srl_enable_raw(term);
 	if (srl_get_cursor_col(term->rawfd) > 1)
 		write(term->rawfd, "\e[7;1m%\e[0m\r\n", 13);
+	if (nl)
+		write(term->rawfd, "\r\n", 2);
 }
