@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/24 12:12:57 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/24 15:07:10 by abaker           ###   ########.fr       */
+/*   Updated: 2022/07/11 14:10:52 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #define B_START "\e[1;38;2;0;255;255m╞"
 #define B_END "╡\e[0m"
 #define B_INFO "╡\e[38;2;255;255;0m"
-#define B_NL "╡\e[1E╘"
+#define B_NL "╡╘"
 #define B_FILL "═"
 
 static int	srl_calc_banner_size(t_banner *banner, int width, bool blank)

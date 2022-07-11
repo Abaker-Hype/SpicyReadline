@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:32 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/24 15:08:49 by abaker           ###   ########.fr       */
+/*   Updated: 2022/07/11 14:00:33 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ typedef struct s_srl
 	t_term		term;
 	t_buff		*buffer;
 	t_banner	banner;
+	int			lastpos;
 	bool		exit;
 	bool		blank;
 }	t_srl;
@@ -107,6 +108,7 @@ t_buff	*srl_new_buffer(bool blank);
 void	srl_add_buff(t_buff *buff, char *str);
 void	srl_rmv_buff(t_buff *buff, bool left);
 void	srl_update_buff_ins(t_buff *buff, bool left, bool full);
+void	srl_clear_buff(t_buff *buff);
 
 //redisplay.c
 void	srl_redisplay(t_srl *srl);

@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 13:35:56 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/24 11:13:01 by abaker           ###   ########.fr       */
+/*   Updated: 2022/07/11 12:16:22 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,8 @@ void	srl_rmv_buff(t_buff *buff, bool left)
 		srl_update_buff_ins(buff, true, false);
 	charsize = ft_charsize(buff->buff[buff->ins]);
 	buff->size -= charsize;
-	ft_memmove(&buff->buff[buff->ins], &buff->buff[buff->ins + charsize], buff->size - buff->ins);
+	ft_memmove(&buff->buff[buff->ins], &buff->buff[buff->ins + charsize],
+		buff->size - buff->ins);
 	ft_bzero(&buff->buff[buff->size], charsize);
 	buff->chars--;
 	buff->update = true;
@@ -87,4 +88,15 @@ void	srl_update_buff_ins(t_buff *buff, bool left, bool end)
 			buff->ins += offset;
 	}
 	buff->update = true;
+}
+
+void	srl_clear_buff(t_buff *buff)
+{
+	if (buff->buff)
+		free(buff->buff);
+	buff->buff = NULL;
+	buff->pos = 0;
+	buff->ins = 0;
+	buff->chars = 0;
+	buff->size = 0;
 }

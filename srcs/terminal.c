@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:19:21 by abaker            #+#    #+#             */
-/*   Updated: 2022/06/28 12:23:40 by abaker           ###   ########.fr       */
+/*   Updated: 2022/07/08 13:43:39 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,7 @@
 static void	srl_enable_raw(t_term *term)
 {
 	struct termios	raw;
-	int				noblock;
 
-	noblock = 1;
 	term->rawfd = open(ttyname(STDIN_FILENO), O_RDWR);
 	tcgetattr(term->rawfd, &term->orig);
 	raw = term->orig;
@@ -52,10 +50,6 @@ static int	srl_get_cursor_col(int rawfd)
 
 void	srl_disable_raw(t_term *term)
 {
-	int	block;
-
-	block = 0;
-	ioctl(term->rawfd, FIONBIO, &block);
 	tcsetattr(term->rawfd, TCSANOW, &term->orig);
 	close(term->rawfd);
 }
