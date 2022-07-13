@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/21 13:15:58 by abaker            #+#    #+#             */
-/*   Updated: 2022/07/11 14:02:25 by abaker           ###   ########.fr       */
+/*   Updated: 2022/07/13 10:47:24 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,27 @@
 void	srl_hook_exit(t_keys key, t_srl *srl)
 {
 	srl_update_buff_ins(srl->buffer, false, true);
-	if (key == K_CTRLC)
-	{
-		srl_add_buff(srl->buffer, "^C");
-		srl_redisplay(srl);
-	}
 	if (key != K_ENTER)
+	{
 		srl_clear_buff(srl->buffer);
-	if (key == K_CTRLD)
-		srl_add_buff(srl->buffer, "exit");
+		if (!srl->blank)
+		{
+			if (key == K_CTRLC)
+				ft_putstr_fd("^C", srl->term.rawfd);
+			else
+			{
+				srl_add_buff(srl->buffer, "exit");
+				srl_redisplay(srl);
+			}
+		}
+		else
+		{
+			if (key == K_CTRLC)
+				srl_add_buff(srl->buffer, "\xc0\xe0");
+			else
+				srl_add_buff(srl->buffer, "\xc2\xc2");
+		}
+	}
 	srl->exit = true;
 }
 

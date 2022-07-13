@@ -6,7 +6,7 @@
 /*   By: abaker <abaker@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 20:14:45 by abaker            #+#    #+#             */
-/*   Updated: 2022/07/11 11:45:29 by abaker           ###   ########.fr       */
+/*   Updated: 2022/07/13 10:36:15 by abaker           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,12 +63,10 @@ char	*spicy_readline(char *prompt, char *user, char *pwd, bool blank)
 	srl = srl_init(prompt, user, pwd, blank);
 	if (!srl)
 		return (NULL);
-	while (true)
+	while (!srl->exit)
 	{
 		input = 0;
 		srl_redisplay(srl);
-		if (srl->exit)
-			break ;
 		if (read(srl->term.rawfd, &input, sizeof(long) - 1) > 0
 			&& !srl_check_hooks(srl, input))
 			srl_add_buff(srl->buffer, (char *)&input);
